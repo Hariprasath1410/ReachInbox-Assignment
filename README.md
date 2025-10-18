@@ -1,8 +1,12 @@
-# OneBox (local)
+# ReachInbox-Assignment
 
-This workspace contains a simple backend (Node + TypeScript) and a tiny frontend.
+A full-stack email management application with Node.js backend and modern UI frontend.
 
-Quick start (Windows PowerShell):
+## Overview
+
+This workspace contains a simple backend (Node + TypeScript) and a frontend interface.
+
+## Quick start (Windows PowerShell)
 
 1. Start docker services (Elasticsearch, Kibana, Postgres):
 
@@ -36,6 +40,6 @@ npx http-server . -p 8080
 
 Open http://localhost:8080 in your browser.
 
-Notes:
+## Notes
 - If port 3001 is in use, stop the process or change PORT in `backend/.env`.
-- The frontend is a minimal UI; enhancements welcome.
+- The frontend provides a modern UI interface for email management
