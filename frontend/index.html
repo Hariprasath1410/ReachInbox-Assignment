@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneBox Email UI</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#ffffff;--muted:#6b7280;--accent:#0f172a}
+    *{box-sizing:border-box}
+    body{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:var(--bg);color:var(--accent);margin:0;padding:2rem}
+    .container{max-width:1100px;margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+    h1{margin:0;font-size:1.5rem}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:1rem}
+    .card{background:var(--card);border-radius:8px;box-shadow:0 1px 3px rgba(16,24,40,0.06);padding:1rem}
+    .email-list{max-height:60vh;overflow:auto}
+    .email-item{padding:0.75rem;border-bottom:1px solid #eef2f7;display:flex;justify-content:space-between;align-items:center}
+    .email-item .meta{color:var(--muted);font-size:0.9rem}
+    .email-item .title{font-weight:600}
+    .email-actions button{background:#efefef;border:0;padding:6px 10px;border-radius:6px;cursor:pointer}
+    .email-details{min-height:200px}
+    form .field{display:flex;gap:0.5rem;margin-bottom:0.5rem}
+    form input, form textarea{flex:1;padding:8px;border:1px solid #e6eef6;border-radius:6px}
+    form textarea{height:100px;resize:vertical}
+    .controls{display:flex;gap:0.5rem}
+    .btn{background:#2563eb;color:white;border:0;padding:8px 12px;border-radius:6px;cursor:pointer}
+    .btn.secondary{background:#6b7280}
+    .empty{color:var(--muted);text-align:center;padding:1rem}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.email-details{order:2}}
+  </style>
+</head>
+<body>
+  <h1>OneBox Email UI</h1>
+  <div class="container">
+    <header>
+      <h1>OneBox</h1>
+      <div class="controls">
+        <button id="refreshBtn" class="btn secondary">Refresh</button>
+      </div>
+    </header>
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2 style="margin-top:0">Add Email</h2>
+          <form id="addEmailForm">
+            <div class="field"><input name="subject" placeholder="Subject" required /></div>
+            <div class="field"><input name="from" placeholder="From" required /></div>
+            <div class="field"><input name="account" placeholder="Account" required /></div>
+            <div class="field"><input name="folder" placeholder="Folder" required /></div>
+            <div class="field"><input name="label" placeholder="Label" /></div>
+            <div class="field"><input name="date" type="datetime-local" required /></div>
+            <div class="field"><textarea name="body" placeholder="Body" required></textarea></div>
+            <div style="display:flex;justify-content:flex-end"><button class="btn" type="submit">Add Email</button></div>
+          </form>
+        </div>
+        <div class="card" style="margin-top:1rem">
+          <h3 style="margin-top:0">Email List</h3>
+          <div id="emails" class="email-list"></div>
+        </div>
+      </div>
+      <div>
+        <div id="emailDetails" class="card email-details" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
