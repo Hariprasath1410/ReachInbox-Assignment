@@ -1,4 +1,7 @@
-const API = 'http://localhost:3001/api/emails';
+// Use localhost backend during development, otherwise use relative API path so deployment can proxy to a backend
+const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3001/api/emails'
+  : '/api/emails';
 
 async function fetchEmails() {
   try {
@@ -56,12 +59,17 @@ async function deleteEmail(id) {
   if (!confirm('Delete this email?')) return;
   try {
     const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
-    if (!res.ok) return alert('Delete failed');
-    fetchEmails();
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.error('Delete failed:', res.status, res.statusText, text);
+      return alert('Delete failed: ' + (text || res.statusText));
+    }
+    // Successful delete: refresh list and hide details
+    await fetchEmails();
     document.getElementById('emailDetails').style.display = 'none';
   } catch (err) {
     console.error(err);
-    alert('Delete failed');
+    alert('Delete failed: ' + (err.message || err));
   }
 }
 
@@ -76,12 +84,16 @@ document.getElementById('addEmailForm').onsubmit = async function(e) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Add failed');
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.error('Add email failed:', res.status, res.statusText, text);
+      throw new Error(text || 'Add failed');
+    }
     form.reset();
     fetchEmails();
   } catch (err) {
     console.error(err);
-    alert('Failed to add email');
+    alert('Failed to add email: ' + (err.message || err));
   }
 };
 

@@ -28,8 +28,25 @@ router.get('/emails/:id', async (req, res) => {
 router.delete('/emails/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        await esClient_1.es.delete({ index: 'emails', id });
-        res.json({ success: true });
+        console.log(`Deleting email id=${id}`);
+        // Primary delete by id
+        const result = await esClient_1.es.delete({ index: 'emails', id, refresh: 'wait_for' });
+        // As a safety-net, also delete any documents matching this _id via delete_by_query
+        try {
+            const dbq = await esClient_1.es.deleteByQuery({ index: 'emails', query: { term: { _id: id } }, refresh: true });
+            console.log(`deleteByQuery result for id=${id}:`, dbq);
+        }
+        catch (e) {
+            // non-fatal
+            console.warn('deleteByQuery warning:', e?.message || e);
+        }
+        // force a final refresh to ensure subsequent searches don't return the deleted doc
+        try {
+            await esClient_1.es.indices.refresh({ index: 'emails' });
+        }
+        catch (e) { /* non-fatal */ }
+        console.log(`Delete result for id=${id}:`, result);
+        return res.json({ success: true, result });
     }
     catch (err) {
         if (err.meta && err.meta.statusCode === 404) {
@@ -49,6 +66,11 @@ router.get('/emails', async (req, res) => {
             must.push({ term: { account } });
         if (folder)
             must.push({ term: { folder } });
+        // Ensure index is refreshed so recent writes/deletes are visible to search
+        try {
+            await esClient_1.es.indices.refresh({ index: 'emails' });
+        }
+        catch (e) { /* non-fatal */ }
         const result = await esClient_1.es.search({
             index: 'emails',
             from: parseInt(offset),
@@ -80,7 +102,8 @@ router.post('/emails', async (req, res) => {
         const doc = { subject, from, body, account, folder, label, date };
         const result = await esClient_1.es.index({
             index: 'emails',
-            document: doc
+            document: doc,
+            refresh: 'wait_for'
         });
         res.status(201).json({ id: result._id, ...doc });
     }

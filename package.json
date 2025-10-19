@@ -1,5 +1,15 @@
 {
+  "name": "onebox-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"cd backend && npx ts-node-dev --respawn src/server.ts\" \"cd frontend && node serve.js\"",
+    "start:backend": "cd backend && npm run start",
+    "start:frontend": "cd frontend && node serve.js"
+  },
   "dependencies": {
     "@elastic/elasticsearch": "^8.19.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
   }
 }
